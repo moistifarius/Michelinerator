@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gaetanerator</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="icons/icon48.png" alt="" class="logo" />
+      <div class="brand-text">
+        <h1>Gaetanerator</h1>
+        <p class="tagline">Every password is just Gaetano</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sticky: tabs + the live password + regenerate stay in view while you tweak -->
+  <div class="sticky-top">
+    <div class="tabs" id="tabs" role="tablist" aria-label="Password type">
+      <button class="tab" data-mode="random" role="tab">Random</button>
+      <button class="tab" data-mode="memorable" role="tab">Memorable</button>
+    </div>
+
+    <ul id="list" class="pw-list" aria-live="polite"></ul>
+
+    <div class="actions">
+      <button id="regen" class="primary">↻ Regenerate</button>
+    </div>
+  </div>
+
+  <!-- ===================== RANDOM TAB ===================== -->
+  <div id="randomPanel" class="panel">
+    <section class="card">
+      <label class="toggle">
+        <input type="checkbox" class="gaytano-cb" />
+        <span>Include Gaytano</span>
+      </label>
+    </section>
+
+    <section class="card">
+      <div class="sliders">
+        <label class="slider">
+          <span>Leetspeak chance <b id="leetProbVal"></b></span>
+          <input id="leetProb" type="range" min="0" max="100" step="5" />
+        </label>
+        <label class="slider">
+          <span>Case-flip chance <b id="caseProbVal"></b></span>
+          <input id="caseProb" type="range" min="0" max="100" step="5" />
+        </label>
+        <label class="slider">
+          <span>Length <b id="minLengthVal"></b></span>
+          <input id="minLength" type="range" min="7" max="42" step="1" />
+        </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Leetspeak substitutions</h2>
+      <div id="leetLetters" class="leet-grid"></div>
+    </section>
+  </div>
+
+  <!-- ===================== MEMORABLE TAB ===================== -->
+  <div id="memorablePanel" class="panel">
+    <section class="card">
+      <label class="toggle">
+        <input type="checkbox" class="gaytano-cb" />
+        <span>Include Gaytano</span>
+      </label>
+    </section>
+
+    <section class="card">
+      <label class="field">
+        <span>Number of words <b id="memWordsVal"></b></span>
+        <input id="memWords" type="range" min="1" max="10" step="1" />
+      </label>
+      <label class="field">
+        <span>Separator</span>
+        <select id="memSeparator">
+          <option value="hyphen">hyphens  ( - )</option>
+          <option value="space">spaces  (  &middot;  )</option>
+          <option value="period">periods  ( . )</option>
+          <option value="comma">commas  ( , )</option>
+          <option value="underscore">underscores  ( _ )</option>
+          <option value="number">numbers</option>
+          <option value="numsym">numbers AND symbols</option>
+        </select>
+      </label>
+      <div class="toggles">
+        <label class="toggle"><input id="memCapitalize" type="checkbox" /> <span>Capitalize each word</span></label>
+        <label class="toggle"><input id="memTrailingNumber" type="checkbox" /> <span>Number after each word</span></label>
+      </div>
+    </section>
+  </div>
+
+  <div class="bottom-bar">
+    <button id="reset" class="linkish">Reset to defaults</button>
+    <span id="savedFlag" class="saved">saved ✓</span>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="store.js"></script>
+  <script src="gaetano.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
