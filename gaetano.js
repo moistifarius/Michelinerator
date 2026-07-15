@@ -19,10 +19,31 @@
     o: "0",
   };
 
+  // Personas — the pool of "sacred words" a password is built from. Gaetano is
+  // the original; Michael swaps in the Michelin-Man family of names. Each has a
+  // `words` pool (drawn from at random) and a `pad` string used to spell out the
+  // length padding in random mode.
+  const PERSONAS = {
+    gaetano: {
+      label: "Gaetano",
+      tagline: "Every password is just Gaetano",
+      words: ["Gaetano"],
+      pad: "gaetano",
+    },
+    michael: {
+      label: "Michael",
+      tagline: "Every password is just the Michelin Man",
+      words: ["Michelin Man", "Big Wheeler", "Michelle", "Michael"],
+      pad: "michael",
+    },
+  };
+
   // The default settings object. This is the single source of truth for the
   // settings schema — the UI renders from it, storage merges onto it.
   const DEFAULTS = {
-    includeGaytano: false,    // mix in "Gaytano" ~50/50 with "Gaetano"
+    persona: "gaetano",       // which word pool to build from ("gaetano" | "michael")
+
+    includeGaytano: false,    // mix in "Gaytano" ~50/50 with "Gaetano" (gaetano only)
 
     leetProb: 0.45,           // chance each letter leet-swaps
     caseProb: 0.35,           // chance each letter flips case
@@ -78,6 +99,7 @@
     const s = Object.assign({}, DEFAULTS, settings || {});
     s.leetLetters = Object.assign({}, DEFAULTS.leetLetters, settings && settings.leetLetters);
     s.memWords = Math.max(1, Math.min((s.memWords | 0) || 1, 10));
+    if (!PERSONAS[s.persona]) s.persona = DEFAULTS.persona;
     return s;
   }
 
@@ -104,19 +126,24 @@
    */
   function spellPad(s, count) {
     if (count <= 0) return "";
-    const word = "gaetano";
+    const persona = PERSONAS[s.persona] || PERSONAS[DEFAULTS.persona];
+    // Use only the letters of the pad word (no spaces) so padding stays compact.
+    const word = persona.pad.replace(/\s+/g, "") || "gaetano";
     let raw = "";
     for (let i = 0; i < count; i++) raw += word[i % word.length];
     return mutate(raw, s);
   }
 
   /**
-   * The sacred word — always "Gaetano", but a coin-flip swaps in "Gaytano"
-   * when the includeGaytano option is on. Casing is normalized here; each
-   * mode re-cases it afterward (random via mutate, memorable via memCapitalize).
+   * The sacred word — a random pick from the active persona's word pool. For
+   * Gaetano, a coin-flip swaps in "Gaytano" when includeGaytano is on. Casing
+   * is normalized by callers (random via mutate, memorable via memCapitalize).
    */
   function pickBase(s) {
-    return s.includeGaytano && chance(0.5) ? "Gaytano" : "Gaetano";
+    if (s.persona === "gaetano" || !PERSONAS[s.persona]) {
+      return s.includeGaytano && chance(0.5) ? "Gaytano" : "Gaetano";
+    }
+    return pick(PERSONAS[s.persona].words);
   }
 
   /**
@@ -149,8 +176,10 @@
     const parts = [];
     for (let i = 0; i < n; i++) {
       let w = pickBase(s);
+      // Title-case each whitespace token so multi-word names ("Michelin Man")
+      // stay properly cased; lower-case everything when capitalize is off.
       w = s.memCapitalize
-        ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+        ? w.replace(/\S+/g, (t) => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase())
         : w.toLowerCase();
       if (s.memTrailingNumber) w += String(randInt(10));
       parts.push(w);
@@ -182,7 +211,7 @@
   }
 
   global.Gaetano = {
-    DEFAULTS, LEET,
+    DEFAULTS, LEET, PERSONAS,
     generate, strength, resolve,
     _internals: { randInt, chance, pick, mutate, one, oneMemorable, separatorFor, pickBase },
   };

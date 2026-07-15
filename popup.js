@@ -19,6 +19,7 @@
 
   const listEl = $("list");
   const tabsEl = $("tabs");
+  const personaEl = $("persona");
   const toastEl = $("toast");
 
   // ---- storage ----
@@ -108,6 +109,21 @@
     $("memorablePanel").classList.toggle("hidden", !mem);
   }
 
+  // ---- persona (Gaetano / Michael) ----
+  // The active persona swaps the word pool the engine builds from. "Include
+  // Gaytano" is a Gaetano-only quirk, so its cards hide for other personas.
+  function syncPersona() {
+    const persona = Gaetano.PERSONAS[settings.persona] || Gaetano.PERSONAS.gaetano;
+    for (const b of personaEl.querySelectorAll("button")) {
+      b.classList.toggle("active", b.dataset.persona === settings.persona);
+    }
+    const isGaetano = settings.persona === "gaetano";
+    for (const card of document.querySelectorAll(".gaytano-card")) {
+      card.classList.toggle("hidden", !isGaetano);
+    }
+    $("tagline").textContent = persona.tagline;
+  }
+
   // ---- shared: gaytano checkboxes (one per tab, kept in sync) ----
   function syncGaytano() {
     for (const cb of document.querySelectorAll(".gaytano-cb")) cb.checked = settings.includeGaytano;
@@ -175,6 +191,15 @@
       commit();
     });
 
+    // persona (Gaetano / Michael)
+    personaEl.addEventListener("click", (e) => {
+      const b = e.target.closest("button[data-persona]");
+      if (!b) return;
+      settings.persona = b.dataset.persona;
+      syncPersona();
+      commit();
+    });
+
     $("regen").addEventListener("click", render);
 
     // shared: gaytano (both tabs' checkboxes)
@@ -220,6 +245,7 @@
     renderLeetGrid();
     bindSettings();
     syncSliders();
+    syncPersona();
     syncTabs();
     render();
   }
