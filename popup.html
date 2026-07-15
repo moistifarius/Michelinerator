@@ -12,13 +12,18 @@
       <img src="icons/icon48.png" alt="" class="logo" />
       <div class="brand-text">
         <h1>Gaetanerator</h1>
-        <p class="tagline">Every password is just Gaetano</p>
+        <p class="tagline" id="tagline">Every password is just Gaetano</p>
       </div>
     </div>
   </header>
 
-  <!-- Sticky: tabs + the live password + regenerate stay in view while you tweak -->
+  <!-- Sticky: character + tabs + the live password + regenerate stay in view while you tweak -->
   <div class="sticky-top">
+    <div class="seg" id="persona" role="tablist" aria-label="Character">
+      <button data-persona="gaetano" role="tab">Gaetano</button>
+      <button data-persona="michael" role="tab">Michael</button>
+    </div>
+
     <div class="tabs" id="tabs" role="tablist" aria-label="Password type">
       <button class="tab" data-mode="random" role="tab">Random</button>
       <button class="tab" data-mode="memorable" role="tab">Memorable</button>
@@ -33,7 +38,7 @@
 
   <!-- ===================== RANDOM TAB ===================== -->
   <div id="randomPanel" class="panel">
-    <section class="card">
+    <section class="card gaytano-card">
       <label class="toggle">
         <input type="checkbox" class="gaytano-cb" />
         <span>Include Gaytano</span>
@@ -65,7 +70,7 @@
 
   <!-- ===================== MEMORABLE TAB ===================== -->
   <div id="memorablePanel" class="panel">
-    <section class="card">
+    <section class="card gaytano-card">
       <label class="toggle">
         <input type="checkbox" class="gaytano-cb" />
         <span>Include Gaytano</span>
